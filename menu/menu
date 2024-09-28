@@ -1,0 +1,92 @@
+#include <TFT_eSPI.h> // Include the graphics and font library
+
+// Screen dimensions
+#define SCREEN_WIDTH  320
+#define SCREEN_HEIGHT 170
+
+// Input buttons
+#define SELECT_BUTTON 32
+#define UP_BUTTON 34
+#define DOWN_BUTTON 35
+
+TFT_eSPI tft = TFT_eSPI();  // Create display object
+
+int currentSelection = 0;
+const int totalGames = 2; // Number of games
+
+void setup() {
+  tft.init();
+  tft.setRotation(1); // Landscape mode
+  tft.fillScreen(TFT_BLACK);
+
+  // Initialize buttons
+  pinMode(SELECT_BUTTON, INPUT_PULLUP);
+  pinMode(UP_BUTTON, INPUT_PULLUP);
+  pinMode(DOWN_BUTTON, INPUT_PULLUP);
+
+  // Display the menu
+  drawMenu();
+}
+
+void loop() {
+  handleMenuInput();
+}
+
+void handleMenuInput() {
+  // Handle navigation
+  if (digitalRead(UP_BUTTON) == LOW) {
+    currentSelection--;
+    if (currentSelection < 0) currentSelection = totalGames - 1;
+    drawMenu();
+    delay(200);  // Debounce delay
+  }
+  if (digitalRead(DOWN_BUTTON) == LOW) {
+    currentSelection++;
+    if (currentSelection >= totalGames) currentSelection = 0;
+    drawMenu();
+    delay(200);  // Debounce delay
+  }
+
+  // Handle selection
+  if (digitalRead(SELECT_BUTTON) == LOW) {
+    selectGame(currentSelection);
+    delay(500);  // Debounce delay
+  }
+}
+
+void drawMenu() {
+  tft.fillScreen(TFT_BLACK);
+  tft.setCursor(50, 50);
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_WHITE);
+  tft.print("Select a Game:");
+  tft.setCursor(50, 80);
+
+  if (currentSelection == 0) {
+    tft.setTextColor(TFT_YELLOW);
+    tft.print("Pong");
+  } else {
+    tft.setTextColor(TFT_WHITE);
+    tft.print("Pong");
+  }
+  tft.setCursor(50, 110);
+
+  if (currentSelection == 1) {
+    tft.setTextColor(TFT_YELLOW);
+    tft.print("Snake");
+  } else {
+    tft.setTextColor(TFT_WHITE);
+    tft.print("Snake");
+  }
+}
+
+void selectGame(int selection) {
+  switch (selection) {
+    case 0:
+      runPong(); // Start Pong game
+      break;
+    case 1:
+      runSnake(); // Start Snake game
+      break;
+  }
+}
