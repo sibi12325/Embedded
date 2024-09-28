@@ -160,13 +160,15 @@ void updateBall() {
     ballDirY = -ballDirY;
   }
 
-  // Ball collision with paddles
-  if (ballX <= 20 && ballY >= player1Y && ballY <= player1Y + PADDLE_HEIGHT) {
-    ballDirX = -currentBallSpeed;  // Change direction and use current speed
+  // Ball collision with player 1's paddle
+  if (ballX <= 20 && ballY + BALL_SIZE >= player1Y && ballY <= player1Y + PADDLE_HEIGHT) {
+    ballDirX = currentBallSpeed;  // Reflect direction and use current speed
     ballDirY = (ballY - (player1Y + PADDLE_HEIGHT / 2)) / 4;  // Add some angle to the bounce
   }
-  if (ballX >= SCREEN_WIDTH - 30 && ballY >= player2Y && ballY <= player2Y + PADDLE_HEIGHT) {
-    ballDirX = currentBallSpeed;  // Change direction and use current speed
+
+  // Ball collision with player 2's paddle
+  if (ballX >= SCREEN_WIDTH - 30 && ballY + BALL_SIZE >= player2Y && ballY <= player2Y + PADDLE_HEIGHT) {
+    ballDirX = -currentBallSpeed;  // Reflect direction and use current speed
     ballDirY = (ballY - (player2Y + PADDLE_HEIGHT / 2)) / 4;  // Add some angle to the bounce
   }
 
