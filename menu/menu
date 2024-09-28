@@ -1,23 +1,28 @@
-#include <TFT_eSPI.h> // Include the graphics and font library
+#include <TFT_eSPI.h>
 
-// Screen dimensions
-#define SCREEN_WIDTH  320
-#define SCREEN_HEIGHT 170
+// Input pins
+#define SELECT_BUTTON 0
+#define UP_BUTTON 16
+#define DOWN_BUTTON 17
 
-// Input buttons
-#define SELECT_BUTTON 32
-#define UP_BUTTON 34
-#define DOWN_BUTTON 35
+TFT_eSPI tft = TFT_eSPI();
 
-TFT_eSPI tft = TFT_eSPI();  // Create display object
+#define totalGames 2;
+
+bool downPressed = false;
+bool upPressed = true;
 
 int currentSelection = 0;
-const int totalGames = 2; // Number of games
 
-void setup() {
+void setup() 
+{
+
   tft.init();
-  tft.setRotation(1); // Landscape mode
   tft.fillScreen(TFT_BLACK);
+
+  Serial.begin(115200);
+
+  tft.setTextSize(2);
 
   // Initialize buttons
   pinMode(SELECT_BUTTON, INPUT_PULLUP);
@@ -26,67 +31,105 @@ void setup() {
 
   // Display the menu
   drawMenu();
+  
 }
 
-void loop() {
-  handleMenuInput();
-}
+void loop() 
+{
+  Serial.println(String(currentSelection));
+  // Moving up the menu
+  if (digitalRead(UP_BUTTON) == HIGH) 
+  {
+    if(!upPressed)
+    {
+      currentSelection = !currentSelection;
+      drawMenu();
+      delay(200);
+    }
 
-void handleMenuInput() {
-  // Handle navigation
-  if (digitalRead(UP_BUTTON) == LOW) {
-    currentSelection--;
-    if (currentSelection < 0) currentSelection = totalGames - 1;
-    drawMenu();
-    delay(200);  // Debounce delay
-  }
-  if (digitalRead(DOWN_BUTTON) == LOW) {
-    currentSelection++;
-    if (currentSelection >= totalGames) currentSelection = 0;
-    drawMenu();
-    delay(200);  // Debounce delay
+    upPressed = true;
+
+  }else
+  {
+    upPressed = false;
   }
 
-  // Handle selection
-  if (digitalRead(SELECT_BUTTON) == LOW) {
+  // Moving down the menu
+  if (digitalRead(DOWN_BUTTON) == HIGH) 
+  {
+    if (!downPressed)
+    {
+      currentSelection = !currentSelection;
+      drawMenu();
+      delay(200);
+    }
+
+    downPressed = true;
+
+  }
+  else
+  {
+    downPressed = false;
+  }
+
+  // selecting a game
+  if (!digitalRead(SELECT_BUTTON) == HIGH) 
+  {
     selectGame(currentSelection);
-    delay(500);  // Debounce delay
+    delay(500);
   }
 }
 
-void drawMenu() {
+void drawMenu() 
+{
   tft.fillScreen(TFT_BLACK);
-  tft.setCursor(50, 50);
-  tft.setTextSize(2);
-  tft.setTextColor(TFT_WHITE);
-  tft.print("Select a Game:");
-  tft.setCursor(50, 80);
 
-  if (currentSelection == 0) {
+  tft.setTextColor(TFT_WHITE);
+  tft.drawString("Select a Game:", 10, tft.height() / 4);
+
+  if (currentSelection == 0) 
+  {
     tft.setTextColor(TFT_YELLOW);
-    tft.print("Pong");
-  } else {
+    tft.drawString("Pong", 80, 2*tft.height() / 4);
+  } 
+  else 
+  {
     tft.setTextColor(TFT_WHITE);
-    tft.print("Pong");
+    tft.drawString("Pong", 80, 2*tft.height() / 4);
   }
   tft.setCursor(50, 110);
 
-  if (currentSelection == 1) {
+  if (currentSelection == 1) 
+  {
     tft.setTextColor(TFT_YELLOW);
-    tft.print("Snake");
-  } else {
+    tft.drawString("Snake", 80, 3*tft.height() / 4);
+  } 
+  else 
+  {
     tft.setTextColor(TFT_WHITE);
-    tft.print("Snake");
+    tft.drawString("Snake", 80, 3*tft.height() / 4);
   }
 }
 
-void selectGame(int selection) {
-  switch (selection) {
+void selectGame(int selection) 
+{
+  switch (selection) 
+  {
     case 0:
-      runPong(); // Start Pong game
+      runPong();
       break;
+
     case 1:
-      runSnake(); // Start Snake game
+      runSnake();
       break;
   }
+}
+
+void runPong()
+{
+  return;
+}
+void runSnake()
+{
+  return;
 }
