@@ -2,6 +2,12 @@
 #include <WiFi.h>
 #include <TFT_eSPI.h>
 
+#define joyXPin 1
+#define joyYPin 11
+#define joyZPin 2
+
+#define buttonPin 3
+
 TFT_eSPI tft = TFT_eSPI();
 
 #define CHANNEL 1
@@ -21,10 +27,12 @@ void setup() {
   ScanForSlave(); // WiFi.macAddress()
   esp_now_add_peer(&slave);
 
-  pinMode(0,INPUT_PULLUP);
-  pinMode(14,INPUT_PULLUP); 
-  pinMode(16,INPUT_PULLUP);
-  pinMode(17, INPUT_PULLUP);
+  // pinMode(joyXPin,INPUT_PULLUP);
+  // pinMode(joyYPin,INPUT_PULLUP); 
+  pinMode(joyZPin,INPUT);
+  digitalWrite(joyZPin,HIGH);
+
+  pinMode(buttonPin, INPUT_PULLUP);
 
   tft.fillScreen(TFT_WHITE);
   tft.setTextDatum(MC_DATUM);
@@ -33,24 +41,47 @@ void setup() {
 }
 
 void loop() {
+  Serial.print("X is :");
+  Serial.print(String(analogRead(joyXPin)));
+  Serial.println(" ");
+  Serial.print("Y is: ");
+  Serial.print(String(analogRead(joyYPin)));
+  Serial.println(" ");
+  Serial.print("Z is: ");
+  Serial.print(String(digitalRead(joyZPin)));
+  Serial.println(" ");
+  Serial.print("ButtonPress is: ");
+  Serial.print(String(digitalRead(buttonPin)));
+  Serial.println(" ");
+  Serial.println(" ");
+  Serial.println(" ");
   tft.fillScreen(TFT_WHITE);
 
-  if( !digitalRead(0) == HIGH )
+  if( analogRead(joyYPin) > 3000 )
   {
     data = 1;
-  }else if( !digitalRead(14) == HIGH)
+  }else if( analogRead(joyYPin) < 1000)
   {
     data = 2;
   }
-  else if(digitalRead(16) == HIGH)
+  else if( analogRead(joyXPin) < 1000 )
   {
     data = 3; 
   }
-  else if(digitalRead(17) == HIGH)
+  else if(digitalRead(buttonPin) == HIGH)
+  {
+    data = 5;
+  }
+  else if(digitalRead(joyZPin) == HIGH)
+  {
+    data = 6;
+  }
+  else if(analogRead(joyXPin) > 3000 && !digitalRead(joyZPin) == HIGH)
   {
     data = 4; 
   }
-  else{
+  else
+  {
     data = 0;
   }
   tft.drawString(String(data), 80, 100);
@@ -84,6 +115,6 @@ void ScanForSlave() {
 
 // callback when data is sent from Master to Slave /
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("I sent my data -> ");
-  Serial.println(data);
+  // Serial.print("I sent my data -> ");
+  // Serial.println(data);
 }
