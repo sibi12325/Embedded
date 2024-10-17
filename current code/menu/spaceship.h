@@ -1,0 +1,2 @@
+void spaceshipSetup();
+void spaceshipLoop();

@@ -1,0 +1,2 @@
+void snakeSetup();
+void snakeLoop();

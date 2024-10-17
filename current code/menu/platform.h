@@ -1,0 +1,2 @@
+void platformSetup();
+void platformLoop();
